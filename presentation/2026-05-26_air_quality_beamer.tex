@@ -1,0 +1,447 @@
+% !TeX program = xelatex
+\documentclass[10pt, aspectratio=169]{beamer}
+
+% ===================================================================
+% 1. 基础配置与学术宏包 - 基于用户上传的 clean beamer 模板改写
+% ===================================================================
+\usepackage{xeCJK}
+\usepackage{fontspec}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[most]{tcolorbox}
+\usepackage{amsmath, amssymb}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{siunitx}
+
+% 字体设置：本地编译使用 Noto 系列，保留模板的 xeCJK + fontspec 工作流
+\setCJKmainfont[BoldFont=Noto Sans CJK SC]{Noto Serif CJK SC}
+\setCJKsansfont[BoldFont=Noto Sans CJK SC]{Noto Sans CJK SC}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+
+% ===================================================================
+% 2. 主题、配色与“呼吸感”全局设置
+% ===================================================================
+\usetheme{metropolis}
+\metroset{
+    progressbar=frametitle,
+    block=fill,
+    numbering=fraction,
+    titleformat=regular
+}
+
+% 定义交大视觉与学术色系
+\definecolor{sjtured}{RGB}{167, 32, 56}
+\definecolor{theoryblue}{RGB}{0, 51, 102}
+\definecolor{graybg}{RGB}{248, 249, 250}
+\definecolor{inkgray}{RGB}{50, 55, 62}
+\definecolor{softblue}{RGB}{235, 242, 250}
+\definecolor{softred}{RGB}{252, 239, 241}
+
+\setbeamercolor{frametitle}{bg=sjtured, fg=white}
+\setbeamercolor{progress bar}{fg=theoryblue}
+\setbeamercolor{itemize item}{fg=theoryblue}
+\setbeamercolor{normal text}{fg=inkgray,bg=white}
+\setbeamercolor{block title}{bg=theoryblue, fg=white}
+\setbeamercolor{block body}{bg=graybg, fg=inkgray}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{section in toc}[sections numbered]
+
+% --- 核心排版命令（沿用并增强模板） ---
+\newcommand{\figpath}{figures}
+\newcommand{\adaptiveimg}[1]{%
+    {\centering \includegraphics[width=0.95\textwidth, height=0.66\textheight, keepaspectratio]{#1} \par}%
+}
+\newcommand{\wideimg}[1]{%
+    {\centering \includegraphics[width=0.98\textwidth, height=0.72\textheight, keepaspectratio]{#1} \par}%
+}
+\newcommand{\elegantcaption}[1]{%
+    \vspace{0.08cm}{\centering\scriptsize\textcolor{gray!80!black}{#1}\par}%
+}
+\newcommand{\keymetric}[3]{%
+    \begin{tcolorbox}[colback=#1!8,colframe=#1,boxrule=0.7pt,arc=2mm,boxsep=3pt,left=5pt,right=5pt,top=5pt,bottom=5pt]
+        {\footnotesize\textcolor{gray!80!black}{#2}}\\[-1mm]
+        {\Large\bfseries\textcolor{#1}{#3}}
+    \end{tcolorbox}%
+}
+\newenvironment{claimbox}[2]{%
+    \begin{tcolorbox}[colback=graybg,colframe=#1,title=#2,boxrule=0.7pt,arc=2mm]
+}{%
+    \end{tcolorbox}
+}
+
+\let\olditemize\itemize
+\let\endolditemize\enditemize
+\renewenvironment{itemize}{%
+  \olditemize
+  \setlength{\itemsep}{0.55em}
+  \setlength{\parskip}{0.15em}
+}{\endolditemize}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.18}
+
+% ===================================================================
+% 3. 汇报元数据
+% ===================================================================
+\title{\vspace*{0.9cm}城市空气质量观测数据的\\概率统计分析与可视化}
+\subtitle{PM2.5 分布拟合、季节差异检验、多元回归与高污染画像\vspace*{0.35cm}}
+\author{汇报人：\quad 骨肉相连}
+\institute{概率论与数理统计课程 Pre 项目 \quad 上海交通大学}
+\date{2026年5月26日}
+
+\begin{document}
+
+% --- 封面页 ---
+\maketitle
+
+% --- 目录页 ---
+\begin{frame}{汇报框架}
+    \vspace{0.15cm}
+    \tableofcontents[hideallsubsections]
+\end{frame}
+
+\section{一、数据结构与统计问题}
+
+\begin{frame}{项目目标：把空气质量数据转化为统计推断证据}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+            \keymetric{theoryblue}{样本量}{65 天}
+            \keymetric{sjtured}{核心响应变量}{PM2.5}
+            \keymetric{theoryblue}{解释维度}{气象 + 交通 + 季节}
+        \column{0.52\textwidth}
+            \claimbox{theoryblue}{分析主线}
+            \begin{itemize}
+                \item \textbf{概率分布}：PM2.5 是否近似正态，是否存在右尾风险？
+                \item \textbf{统计检验}：不同季节 PM2.5 水平是否显著不同？
+                \item \textbf{回归解释}：气象、交通和季节变量的相对贡献如何？
+                \item \textbf{风险画像}：高污染日对应怎样的变量组合？
+            \end{itemize}
+            \endclaimbox
+    \end{columns}
+\end{frame}
+
+\begin{frame}{变量体系与方法矩阵}
+    \begin{table}
+        \footnotesize
+        \begin{tabularx}{\textwidth}{@{}p{2.5cm}Y Y@{}}
+            \toprule
+            \textbf{分析层级} & \textbf{统计任务} & \textbf{输出形式} \\
+            \midrule
+            描述统计 & 均值、标准差、分位数、偏度、峰度 & 总体描述表、季节描述表 \\
+            概率建模 & Shapiro-Wilk、D'Agostino、Anderson-Darling；Normal / Lognormal / Gamma AIC 比较 & 分布拟合图、AIC 表 \\
+            差异检验 & ANOVA、Welch ANOVA、Kruskal-Wallis、Holm 校正两两比较 & 季节分布图、校正 p 值热图 \\
+            相关与回归 & Pearson / Spearman；OLS + HC3；VIF 与诊断检验 & 相关热图、回归森林图、诊断图 \\
+            高阶探索 & 交互项模型、随机森林置换重要性、响应面 & 模型比较、变量重要性、高污染画像 \\
+            \bottomrule
+        \end{tabularx}
+    \end{table}
+    \vspace{0.1cm}
+    \begin{tcolorbox}[colback=softblue,colframe=theoryblue,boxrule=0.5pt]
+        \small 统计策略不是只“画图展示”，而是用\textbf{分布 - 检验 - 回归 - 诊断 - 非线性探索}形成完整证据链。
+    \end{tcolorbox}
+\end{frame}
+
+\section{二、初阶可视化：分布、季节与相关关系}
+
+\begin{frame}{初阶可视化 I：PM2.5 呈明显右偏分布}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+            \claimbox{sjtured}{核心发现}
+            \begin{itemize}
+                \item 均值 $49.47$，中位数 $39.20$，最大值 $154.40$。
+                \item Shapiro-Wilk 检验 $p<0.001$，不支持正态分布假设。
+                \item Gamma 分布 AIC 最低：$634.87$，优于 Lognormal 和 Normal。
+                \item 课堂汇报应强调“尾部污染风险”，而不是只报告平均水平。
+            \end{itemize}
+            \endclaimbox
+        \column{0.52\textwidth}
+            \adaptiveimg{\figpath/initial/01_pm25_distribution.png}
+            \elegantcaption{图 1：PM2.5 经验分布、核密度与候选概率分布拟合。}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{初阶可视化 II：季节差异具有强烈可视信号}
+    \begin{columns}[T]
+        \column{0.52\textwidth}
+            \adaptiveimg{\figpath/initial/02_season_distribution.png}
+            \elegantcaption{图 2：季节小提琴图、箱线图与均值置信区间。}
+        \column{0.48\textwidth}
+            \claimbox{theoryblue}{可视化解释}
+            \begin{itemize}
+                \item 冬季 PM2.5 分布整体右移，高值区间更集中。
+                \item 夏季分布明显更低，提示扩散条件或季节背景差异。
+                \item 该图适合作为差异检验前的直观铺垫。
+            \end{itemize}
+            \endclaimbox
+            \vspace{0.15cm}
+            \begin{tcolorbox}[colback=softred,colframe=sjtured,boxrule=0.5pt]
+                \small 注意：图形只能形成判断线索，显著性结论需要后续 ANOVA / Welch / Kruskal-Wallis 支撑。
+            \end{tcolorbox}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{初阶可视化 III：相关矩阵锁定主要方向}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+            \adaptiveimg{\figpath/initial/03_correlation_heatmap.png}
+            \elegantcaption{图 3：多维变量相关矩阵。}
+        \column{0.50\textwidth}
+            \begin{table}
+                \scriptsize
+                \begin{tabular}{@{}lrrr@{}}
+                    \toprule
+                    \textbf{变量} & \textbf{Pearson r} & \textbf{95\% CI} & \textbf{$p$} \\
+                    \midrule
+                    气温 & -0.756 & [-0.844, -0.627] & $<0.001$ \\
+                    风速 & -0.348 & [-0.545, -0.113] & 0.005 \\
+                    湿度 & 0.248 & [0.004, 0.464] & 0.046 \\
+                    交通指数 & 0.209 & [-0.037, 0.431] & 0.095 \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+            \begin{itemize}
+                \item 气温与 PM2.5 的负相关最强。
+                \item 风速呈稳定负相关，符合污染扩散直觉。
+                \item 交通指数在双变量层面边际不显著，但在多元模型中变得稳定。
+            \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{初阶可视化 IV：LOWESS 揭示非线性线索}
+    \wideimg{\figpath/initial/04_bivariate_lowess_panels.png}
+    \elegantcaption{图 4：PM2.5 与气温、湿度、风速、交通指数的双变量 LOWESS 曲线。曲线用于发现形态，不直接等同因果关系。}
+\end{frame}
+
+\begin{frame}{初阶可视化 V：季节画像把多变量差异压缩为一张图}
+    \begin{columns}[T]
+        \column{0.60\textwidth}
+            \adaptiveimg{\figpath/initial/05_seasonal_zscore_profile.png}
+            \elegantcaption{图 5：按季节计算的标准化变量画像。}
+        \column{0.40\textwidth}
+            \claimbox{theoryblue}{读图要点}
+            \begin{itemize}
+                \item 冬季：PM2.5 显著偏高、气温显著偏低。
+                \item 夏季：PM2.5 偏低，形成对照组。
+                \item 画像图可以服务后续“季节是结构性背景变量”的解释。
+            \end{itemize}
+            \endclaimbox
+    \end{columns}
+\end{frame}
+
+\section{三、统计检验与多元回归}
+
+\begin{frame}{季节差异检验：三类检验给出一致结论}
+    \begin{columns}[T]
+        \column{0.43\textwidth}
+            \begin{table}
+                \footnotesize
+                \begin{tabular}{@{}lrr@{}}
+                    \toprule
+                    \textbf{检验} & \textbf{统计量} & \textbf{$p$ 值} \\
+                    \midrule
+                    One-way ANOVA & 51.641 & $<0.001$ \\
+                    Welch ANOVA & 42.892 & $<0.001$ \\
+                    Kruskal-Wallis & 39.124 & $<0.001$ \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+            \begin{tcolorbox}[colback=softblue,colframe=theoryblue,boxrule=0.5pt]
+                \small 效应量：$\eta^2=0.717$，$\omega^2=0.700$，季节因素具有强解释力。
+            \end{tcolorbox}
+        \column{0.57\textwidth}
+            \adaptiveimg{\figpath/advanced/12_season_pairwise_pvalues.png}
+            \elegantcaption{图 6：Holm 校正后的季节两两比较 p 值热图。}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{多元回归模型：控制季节后的解释框架}
+    \vspace{-0.05cm}
+    \begin{tcolorbox}[colback=graybg,colframe=theoryblue,title=主模型设定,boxrule=0.6pt]
+        \small
+        \[
+        \mathrm{PM2.5}_i=\beta_0+\beta_1\mathrm{Temp}_i+\beta_2\mathrm{Humidity}_i+\beta_3\mathrm{Wind}_i+\beta_4\mathrm{Traffic}_i+\gamma_s\mathrm{Season}_{is}+\varepsilon_i
+        \]
+        \vspace{-0.3cm}
+        \scriptsize 估计方式：OLS + HC3 稳健标准误；目标是解释 PM2.5 条件均值，而非建立长期因果模型。
+    \end{tcolorbox}
+    \begin{columns}[T]
+        \column{0.44\textwidth}
+            \begin{itemize}
+                \item 完整加性模型：$R^2=0.891$，调整 $R^2=0.877$。
+                \item 冬季虚拟变量是最强正向效应。
+                \item 风速为稳定负向效应；湿度和交通指数为正向效应。
+            \end{itemize}
+        \column{0.56\textwidth}
+            \adaptiveimg{\figpath/advanced/06_regression_forest_standardized.png}
+            \elegantcaption{图 7：标准化回归系数与稳健置信区间。}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{模型比较：季节变量显著提高解释力}
+    \begin{columns}[T]
+        \column{0.58\textwidth}
+            \adaptiveimg{\figpath/advanced/08_model_comparison.png}
+            \elegantcaption{图 8：不同模型的解释力、AIC 与样本内误差。}
+        \column{0.42\textwidth}
+            \begin{table}
+                \scriptsize
+                \begin{tabular}{@{}lrrr@{}}
+                    \toprule
+                    \textbf{模型} & \textbf{$R^2$} & \textbf{Adj. $R^2$} & \textbf{AIC} \\
+                    \midrule
+                    空模型 & 0.000 & 0.000 & 660.93 \\
+                    气象模型 & 0.713 & 0.699 & 585.76 \\
+                    气象 + 交通 & 0.745 & 0.728 & 580.05 \\
+                    完整加性 & 0.891 & 0.877 & 531.01 \\
+                    加入交互 & 0.899 & 0.883 & 529.65 \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+            \begin{tcolorbox}[colback=softred,colframe=sjtured,boxrule=0.5pt]
+                \small 从 AIC 和调整 $R^2$ 看，交互模型略优；但课程展示中主模型仍以可解释的完整加性模型为核心。
+            \end{tcolorbox}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{模型诊断：线性模型总体可用，但存在非线性提示}
+    \begin{columns}[T]
+        \column{0.56\textwidth}
+            \adaptiveimg{\figpath/advanced/07_model_diagnostics.png}
+            \elegantcaption{图 9：残差分布、QQ 图、拟合值残差与杠杆诊断。}
+        \column{0.44\textwidth}
+            \begin{table}
+                \scriptsize
+                \begin{tabular}{@{}lrr@{}}
+                    \toprule
+                    \textbf{诊断检验} & \textbf{统计量} & \textbf{$p$ 值} \\
+                    \midrule
+                    Shapiro-Wilk & 0.981 & 0.428 \\
+                    Jarque-Bera & 1.139 & 0.566 \\
+                    Breusch-Pagan & 5.230 & 0.632 \\
+                    White LM & 28.658 & 0.483 \\
+                    Durbin-Watson & 1.842 & -- \\
+                    Ramsey RESET & 6.356 & 0.015 \\
+                    \bottomrule
+                \end{tabular}
+            \end{table}
+            \begin{itemize}
+                \item 残差正态性与异方差诊断未显示明显问题。
+                \item RESET 显著，提示应补充非线性或交互探索。
+            \end{itemize}
+    \end{columns}
+\end{frame}
+
+\section{四、高阶可视化：非线性与高污染画像}
+
+\begin{frame}{高阶可视化 I：随机森林作为非线性稳健性检查}
+    \begin{columns}[T]
+        \column{0.55\textwidth}
+            \adaptiveimg{\figpath/advanced/09_rf_permutation_importance.png}
+            \elegantcaption{图 10：随机森林置换重要性。}
+        \column{0.45\textwidth}
+            \claimbox{theoryblue}{与回归结果的关系}
+            \begin{itemize}
+                \item 气温、季节、风速的重要性最高，与相关和回归结论相互印证。
+                \item 该模型用于发现非线性结构，不替代可解释回归。
+                \item 在小样本条件下，机器学习结果应作为辅助证据而非最终因果判断。
+            \end{itemize}
+            \endclaimbox
+    \end{columns}
+\end{frame}
+
+\begin{frame}{高阶可视化 II：高污染日的变量画像}
+    \begin{columns}[T]
+        \column{0.53\textwidth}
+            \adaptiveimg{\figpath/advanced/10_high_pollution_profile.png}
+            \elegantcaption{图 11：Top 20\% 高污染日与普通日期的变量差异。}
+        \column{0.47\textwidth}
+            \claimbox{sjtured}{高污染阈值与解释}
+            \begin{itemize}
+                \item 高污染日定义：PM2.5 位于样本前 20\%。
+                \item 阈值：$74.14\,\mu g/m^3$。
+                \item 高污染日表现为低温、高交通指数、较高湿度与较弱风速组合。
+            \end{itemize}
+            \endclaimbox
+    \end{columns}
+\end{frame}
+
+\begin{frame}{高阶可视化 III：交通 - 风速响应面呈现条件组合风险}
+    \begin{columns}[T]
+        \column{0.58\textwidth}
+            \adaptiveimg{\figpath/advanced/11_response_surface_traffic_wind.png}
+            \elegantcaption{图 12：在气象与季节背景下的交通指数 - 风速响应面。}
+        \column{0.42\textwidth}
+            \begin{itemize}
+                \item 风速越低，污染扩散条件越弱。
+                \item 交通指数越高，局部排放压力越强。
+                \item 二者叠加形成更高 PM2.5 风险区。
+            \end{itemize}
+            \vspace{0.2cm}
+            \begin{tcolorbox}[colback=softblue,colframe=theoryblue,boxrule=0.5pt]
+                \small 响应面适合在 Pre 中承担“高阶可视化亮点”：它把单变量解释推进到条件组合解释。
+            \end{tcolorbox}
+    \end{columns}
+\end{frame}
+
+\section{结论与汇报口径}
+
+\begin{frame}{结论：四条可以直接用于课堂汇报的判断}
+    \vspace{0.15cm}
+    \begin{tcolorbox}[colback=theoryblue!5,colframe=theoryblue,boxsep=8pt]
+        \centering\large\color{theoryblue}\bfseries
+        PM2.5 波动不是单一变量决定，而是季节背景、扩散条件与交通活动共同作用的结果。
+    \end{tcolorbox}
+    \vspace{0.25cm}
+    \begin{enumerate}
+        \item \textbf{分布层面}：PM2.5 右偏明显，Gamma 拟合优于正态，尾部风险值得强调。
+        \item \textbf{检验层面}：季节差异在三类检验中均显著，效应量很大。
+        \item \textbf{回归层面}：完整模型调整 $R^2=0.877$；冬季、风速、湿度和交通指数解释较稳定。
+        \item \textbf{风险层面}：低温、高交通、较弱风速构成高污染日的典型画像。
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{限制与可复现性：公开仓库应保留的方法透明度}
+    \begin{columns}[T]
+        \column{0.52\textwidth}
+            \claimbox{sjtured}{研究限制}
+            \begin{itemize}
+                \item 样本量仅 65 天，适合课程展示与方法演示。
+                \item 数据缺少真实日期、空间站点、排放源和滞后项。
+                \item 回归结果不能直接外推为长期城市治理因果结论。
+            \end{itemize}
+            \endclaimbox
+        \column{0.48\textwidth}
+            \claimbox{theoryblue}{复现路径}
+            \begin{itemize}
+                \item 原始数据：\texttt{data/raw/数据集3\_空气质量.xlsx}
+                \item 主脚本：\texttt{src/01\_analysis.py}
+                \item 图像：\texttt{outputs/figures/}
+                \item 表格：\texttt{outputs/tables/}
+                \item 本页幻灯片：\texttt{slides/beamer/}
+            \end{itemize}
+            \endclaimbox
+    \end{columns}
+\end{frame}
+
+% --- 结束页 ---
+\begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=center, opacity=0.07] at (current page.center) {
+            \fontsize{118}{148}\selectfont\color{theoryblue}\textbf{THANKS}
+        };
+        \node[anchor=center, yshift=0.45cm] at (current page.center) {
+            \begin{minipage}{\paperwidth}
+                \centering
+                {\fontsize{40}{48}\selectfont\color{sjtured}\textbf{Q \& A}} \\
+                \vspace{0.7cm}
+                {\color{gray}\large 感\quad 谢\quad 聆\quad 听 \quad · \quad 敬\quad 请\quad 指\quad 正}
+            \end{minipage}
+        };
+    \end{tikzpicture}
+\end{frame}
+
+\end{document}

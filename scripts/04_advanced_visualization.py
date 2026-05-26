@@ -21,7 +21,7 @@ DATA_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIG_DIR = os.path.join(DATA_DIR, 'outputs', 'figures')
 os.makedirs(FIG_DIR, exist_ok=True)
 
-df = pd.read_excel(os.path.join(DATA_DIR, '数据集3_空气质量.xlsx'))
+df = pd.read_excel(os.path.join(DATA_DIR, 'data', 'raw', '数据集3_空气质量.xlsx'))
 
 # ─── Helper: Publication-quality styling ─────────────────────────────────────
 def style_ax(ax, xlabel='', ylabel='', title=''):

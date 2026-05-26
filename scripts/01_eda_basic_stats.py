@@ -13,7 +13,7 @@ DATA_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUTPUT_DIR = os.path.join(DATA_DIR, 'outputs', 'tables')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-df = pd.read_excel(os.path.join(DATA_DIR, '数据集3_空气质量.xlsx'))
+df = pd.read_excel(os.path.join(DATA_DIR, 'data', 'raw', '数据集3_空气质量.xlsx'))
 print("=" * 70)
 print("  AIR QUALITY DATASET — EXPLORATORY DATA ANALYSIS")
 print("=" * 70)

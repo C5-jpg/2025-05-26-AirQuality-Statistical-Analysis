@@ -36,7 +36,7 @@ os.makedirs(FIG_DIR, exist_ok=True)
 os.makedirs(TABLE_DIR, exist_ok=True)
 os.makedirs(REPORT_DIR, exist_ok=True)
 
-df = pd.read_excel(os.path.join(DATA_DIR, '数据集3_空气质量.xlsx'))
+df = pd.read_excel(os.path.join(DATA_DIR, 'data', 'raw', '数据集3_空气质量.xlsx'))
 
 # Use date_id as implicit time index
 series_dict = {}

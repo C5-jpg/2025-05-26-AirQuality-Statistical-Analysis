@@ -17,7 +17,7 @@ DATA_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIG_DIR = os.path.join(DATA_DIR, 'outputs', 'figures')
 os.makedirs(FIG_DIR, exist_ok=True)
 
-df = pd.read_excel(os.path.join(DATA_DIR, '数据集3_空气质量.xlsx'))
+df = pd.read_excel(os.path.join(DATA_DIR, 'data', 'raw', '数据集3_空气质量.xlsx'))
 
 # ─── Figure 1: Distribution of All Variables ─────────────────────────────────
 print("Generating Figure 1: Variable Distributions...")
