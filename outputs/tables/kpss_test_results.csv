@@ -1,0 +1,6 @@
+﻿Variable,KPSS Statistic,p-value,Lags used,Critical 1%,Critical 5%,Critical 10%,Stationary (α=0.05)
+PM2.5 (μg/m³),0.0823,0.1,5,0.739,0.463,0.347,Yes
+Temperature (°C),0.5389,0.032913,4,0.739,0.463,0.347,No
+Humidity (%),0.0764,0.1,8,0.739,0.463,0.347,Yes
+Wind Speed (m/s),0.131,0.1,0,0.739,0.463,0.347,Yes
+Traffic Index,0.0946,0.1,2,0.739,0.463,0.347,Yes

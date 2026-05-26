@@ -1,0 +1,56 @@
+======================================================================
+  STATIONARITY ANALYSIS REPORT
+  Augmented Dickey-Fuller (ADF) & KPSS Tests
+======================================================================
+
+  METHODOLOGY
+  ──────────────────────────────────────────────────────────
+  ADF Test:
+    H₀: The series has a unit root (non-stationary)
+    H₁: The series is stationary
+    Decision: Reject H₀ if ADF statistic < critical value
+
+  KPSS Test:
+    H₀: The series is trend-stationary
+    H₁: The series has a unit root (non-stationary)
+    Decision: Reject H₀ if KPSS statistic > critical value
+
+  Interpretation Matrix:
+    ADF=Reject + KPSS=Not Reject → Stationary
+    ADF=Not Reject + KPSS=Reject → Non-stationary
+    ADF=Reject + KPSS=Reject     → Difference-stationary
+    ADF=Not Reject + KPSS=Not Reject → Weak stationarity
+
+──────────────────────────────────────────────────────────────────────
+  RESULTS (lag selection: AIC)
+──────────────────────────────────────────────────────────────────────
+
+  PM2.5 (μg/m³):
+    ADF:  τ = -5.2782, p = 0.000006, lags = 3
+          Critical: 1%=-3.5424, 5%=-2.9102, 10%=-2.5927
+    KPSS: τ = 0.0823, p = 0.100000
+    → Stationary
+
+  Temperature (°C):
+    ADF:  τ = -2.4649, p = 0.124251, lags = 4
+          Critical: 1%=-3.5444, 5%=-2.9111, 10%=-2.5932
+    KPSS: τ = 0.5389, p = 0.032913
+    → Non-stationary
+
+  Humidity (%):
+    ADF:  τ = -2.3764, p = 0.148498, lags = 4
+          Critical: 1%=-3.5444, 5%=-2.9111, 10%=-2.5932
+    KPSS: τ = 0.0764, p = 0.100000
+    → Conflicting evidence
+
+  Wind Speed (m/s):
+    ADF:  τ = -6.2900, p = 0.000000, lags = 3
+          Critical: 1%=-3.5424, 5%=-2.9102, 10%=-2.5927
+    KPSS: τ = 0.1310, p = 0.100000
+    → Stationary
+
+  Traffic Index:
+    ADF:  τ = -6.8527, p = 0.000000, lags = 0
+          Critical: 1%=-3.5369, 5%=-2.9079, 10%=-2.5915
+    KPSS: τ = 0.0946, p = 0.100000
+    → Stationary

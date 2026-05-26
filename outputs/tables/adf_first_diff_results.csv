@@ -1,0 +1,6 @@
+﻿Variable,ADF Statistic,p-value,Used Lags,Critical 5%,Stationary (α=0.05)
+ΔPM2.5 (μg/m³),-5.6454,1e-06,10,-2.9179,Yes
+ΔTemperature (°C),-4.7551,6.6e-05,10,-2.9179,Yes
+ΔHumidity (%),-9.3476,0.0,3,-2.9111,Yes
+ΔWind Speed (m/s),-5.8778,0.0,8,-2.9157,Yes
+ΔTraffic Index,-10.0877,0.0,1,-2.9094,Yes

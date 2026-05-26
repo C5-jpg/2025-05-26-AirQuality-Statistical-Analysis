@@ -1,0 +1,11 @@
+﻿Variable,Criterion,ADF Statistic,p-value,Used Lags,N Obs,Critical 1%,Critical 5%,Critical 10%,Stationary (α=0.05),Stationary (α=0.01)
+PM2.5 (μg/m³),AIC,-5.2782,6e-06,3,61,-3.5424,-2.9102,-2.5927,Yes,Yes
+PM2.5 (μg/m³),BIC,-9.7634,0.0,0,64,-3.5369,-2.9079,-2.5915,Yes,Yes
+Temperature (°C),AIC,-2.4649,0.124251,4,60,-3.5444,-2.9111,-2.5932,No,No
+Temperature (°C),BIC,-6.0677,0.0,1,63,-3.5387,-2.9086,-2.5919,Yes,Yes
+Humidity (%),AIC,-2.3764,0.148498,4,60,-3.5444,-2.9111,-2.5932,No,No
+Humidity (%),BIC,-8.9178,0.0,0,64,-3.5369,-2.9079,-2.5915,Yes,Yes
+Wind Speed (m/s),AIC,-6.29,0.0,3,61,-3.5424,-2.9102,-2.5927,Yes,Yes
+Wind Speed (m/s),BIC,-9.7762,0.0,0,64,-3.5369,-2.9079,-2.5915,Yes,Yes
+Traffic Index,AIC,-6.8527,0.0,0,64,-3.5369,-2.9079,-2.5915,Yes,Yes
+Traffic Index,BIC,-6.8527,0.0,0,64,-3.5369,-2.9079,-2.5915,Yes,Yes
