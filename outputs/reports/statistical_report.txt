@@ -1,0 +1,175 @@
+======================================================================
+  STATISTICAL ANALYSIS REPORT
+  Air Quality Dataset — PM2.5 Analysis
+======================================================================
+
+──────────────────────────────────────────────────────────────────────
+  SECTION 1: NORMALITY ASSESSMENT
+──────────────────────────────────────────────────────────────────────
+  H₀: The data follows a normal distribution
+  H₁: The data does not follow a normal distribution
+
+  PM2.5 (μg/m³):
+    Shapiro-Wilk: W=0.8950, p=0.0000
+    D'Agostino: K²=11.9224, p=0.0026
+    → Non-normal distribution (use non-parametric tests)
+
+  Temperature (°C):
+    Shapiro-Wilk: W=0.9673, p=0.0829
+    D'Agostino: K²=4.4488, p=0.1081
+    → Normal distribution
+
+  Humidity (%):
+    Shapiro-Wilk: W=0.9881, p=0.7891
+    D'Agostino: K²=0.5796, p=0.7484
+    → Normal distribution
+
+  Wind Speed (m/s):
+    Shapiro-Wilk: W=0.9826, p=0.4933
+    D'Agostino: K²=1.6915, p=0.4292
+    → Normal distribution
+
+  Traffic Index:
+    Shapiro-Wilk: W=0.9679, p=0.0891
+    D'Agostino: K²=5.6980, p=0.0579
+    → Normal distribution
+
+──────────────────────────────────────────────────────────────────────
+  SECTION 2: CORRELATION ANALYSIS
+──────────────────────────────────────────────────────────────────────
+
+  2.1 Pearson Correlation (PM2.5 vs Predictors)
+  H₀: ρ = 0 (no linear correlation)
+  H₁: ρ ≠ 0
+
+  Temperature (°C):
+    Pearson r = -0.7555 (p = 0.0000) ***
+    Spearman ρ = -0.6929 (p = 0.0000)
+    R² = 0.5708 | Interpretation: 57.1% variance explained
+
+  Humidity (%):
+    Pearson r = 0.2480 (p = 0.0464) *
+    Spearman ρ = 0.2849 (p = 0.0215)
+    R² = 0.0615 | Interpretation: 6.1% variance explained
+
+  Wind Speed (m/s):
+    Pearson r = -0.3477 (p = 0.0045) **
+    Spearman ρ = -0.3226 (p = 0.0088)
+    R² = 0.1209 | Interpretation: 12.1% variance explained
+
+  Traffic Index:
+    Pearson r = 0.2088 (p = 0.0951) n.s.
+    Spearman ρ = 0.2292 (p = 0.0663)
+    R² = 0.0436 | Interpretation: 4.4% variance explained
+
+──────────────────────────────────────────────────────────────────────
+  SECTION 3: SEASONAL DIFFERENCE TESTS
+──────────────────────────────────────────────────────────────────────
+
+  3.1 One-way ANOVA (PM2.5 across seasons)
+  H₀: μ_spring = μ_summer = μ_autumn = μ_winter
+  H₁: At least one mean differs
+
+  F(3, 61) = 51.6408
+  p-value = 0.000000
+  → Reject H₀: Significant seasonal differences
+
+  Effect size: η² = 0.7175 (large)
+
+  3.2 Kruskal-Wallis Test (non-parametric)
+  H = 39.1242, p = 0.000000
+  → Significant
+
+  3.3 Pairwise Comparisons (Bonferroni-corrected)
+
+  春 vs 夏:
+    Mean diff = 15.15
+    Welch's t = 2.742, p = 0.0104, Bonf. p = 0.0623 n.s.
+    Cohen's d = 0.918
+    Mann-Whitney U = 173.5, p = 0.0389
+
+  春 vs 秋:
+    Mean diff = -9.72
+    Welch's t = -1.483, p = 0.1465, Bonf. p = 0.8792 n.s.
+    Cohen's d = -0.475
+    Mann-Whitney U = 139.0, p = 0.1559
+
+  春 vs 冬:
+    Mean diff = -76.66
+    Welch's t = -8.557, p = 0.0000, Bonf. p = 0.0000 *
+    Cohen's d = -3.057
+    Mann-Whitney U = 2.0, p = 0.0000
+
+  夏 vs 秋:
+    Mean diff = -24.87
+    Welch's t = -4.631, p = 0.0001, Bonf. p = 0.0005 *
+    Cohen's d = -1.588
+    Mann-Whitney U = 28.0, p = 0.0005
+
+  夏 vs 冬:
+    Mean diff = -91.80
+    Welch's t = -11.290, p = 0.0000, Bonf. p = 0.0000 *
+    Cohen's d = -4.306
+    Mann-Whitney U = 0.0, p = 0.0000
+
+  秋 vs 冬:
+    Mean diff = -66.93
+    Welch's t = -7.551, p = 0.0000, Bonf. p = 0.0000 *
+    Cohen's d = -2.729
+    Mann-Whitney U = 2.0, p = 0.0000
+
+──────────────────────────────────────────────────────────────────────
+  SECTION 4: MULTIPLE LINEAR REGRESSION
+──────────────────────────────────────────────────────────────────────
+  Dependent Variable: PM2.5 (μg/m³)
+  Independent Variables: Temperature, Humidity, Wind Speed, Traffic Index
+
+  4.1 Model Summary
+  R² = 0.7452
+  Adjusted R² = 0.7282
+  F(4, 60) = 43.8717
+  p-value (model) = 0.000000
+  RMSE = 20.2085
+  AIC = 395.5905
+  BIC = 406.4625
+
+  4.2 Coefficients
+  Variable                    β       SE        t          p               95% CI
+  --------------------------------------------------------------------------------
+  Intercept             74.4365  16.5996   4.4842   0.000034 [41.23, 107.64] ***
+  Temperature (°C)      -3.0856   0.2744 -11.2433   0.000000 [-3.63, -2.54] ***
+  Humidity (%)           0.3947   0.1670   2.3637   0.021351 [0.06, 0.73] *
+  Wind Speed (m/s)      -7.2764   1.4610  -4.9803   0.000006 [-10.20, -4.35] ***
+  Traffic Index          0.4162   0.1514   2.7488   0.007890 [0.11, 0.72] **
+
+  4.3 Multicollinearity Diagnostics (VIF)
+
+  Temperature (°C): VIF = 1.006 (Low)
+  Humidity (%): VIF = 1.022 (Low)
+  Wind Speed (m/s): VIF = 1.018 (Low)
+  Traffic Index: VIF = 1.003 (Low)
+
+  4.4 Residual Diagnostics
+
+  Shapiro-Wilk test on residuals: W = 0.9720, p = 0.1478
+  → Residuals are normally distributed
+  Durbin-Watson statistic: 2.0214
+  → No significant autocorrelation
+  Breusch-Pagan test: LM = 3.2306, p = 0.5200
+  → Homoscedastic residuals
+
+  4.5 Standardized Coefficients (Beta Weights)
+
+  Temperature (°C): β_std = -0.7349
+  Humidity (%): β_std = 0.1557
+  Wind Speed (m/s): β_std = -0.3275
+  Traffic Index: β_std = 0.1794
+
+──────────────────────────────────────────────────────────────────────
+  SECTION 5: HOMOGENEITY OF VARIANCE (LEVENE'S TEST)
+──────────────────────────────────────────────────────────────────────
+  PM2.5 (μg/m³): F = 4.3515, p = 0.0076 → Unequal variances
+  Temperature (°C): F = 3.5329, p = 0.0199 → Unequal variances
+  Humidity (%): F = 1.1157, p = 0.3497 → Equal variances
+  Wind Speed (m/s): F = 0.5624, p = 0.6419 → Equal variances
+  Traffic Index: F = 0.3534, p = 0.7868 → Equal variances

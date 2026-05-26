@@ -1,0 +1,5 @@
+﻿Variable,VIF,Concern
+Temperature (°C),1.006,Low (<5)
+Humidity (%),1.022,Low (<5)
+Wind Speed (m/s),1.018,Low (<5)
+Traffic Index,1.003,Low (<5)

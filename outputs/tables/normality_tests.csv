@@ -1,0 +1,6 @@
+﻿Variable,Shapiro-Wilk W,Shapiro p-value,K-S statistic,K-S p-value,Normal? (α=0.05)
+PM2.5 (μg/m³),0.895,<0.001,0.1256,0.2358,No
+Temperature (°C),0.9673,0.0829,0.0999,0.5033,Yes
+Humidity (%),0.9881,0.7891,0.0687,0.8983,Yes
+Wind Speed (m/s),0.9826,0.4933,0.0623,0.9490,Yes
+Traffic Index,0.9679,0.0891,0.056,0.9800,Yes
